@@ -21,19 +21,18 @@ public class SistemaDormir : MonoBehaviour
     public Sprite flechaIzquierda;
     public Sprite flechaDerecha;
 
+    [Header("UI Energía")]
+    public Image barraCansancio;
+
+    [Header("Energía")]
+    public float energia = 100f;
+    public float energiaMax = 100f;
+    public float perdidaPorParpadeo = 5f;
+
     [Header("Parpadeo")]
     public float tiempoCierre = 0.15f;
     public float tiempoApertura = 0.2f;
     public float tiempoCerradoBase = 0.05f;
-
-    [Header("Cansancio")]
-    public float cansancio = 0f;
-    public float aumentoPorParpadeo = 0.1f;
-    public float maxCansancio = 1f;
-
-    [Header("Intervalo")]
-    public float intervaloMin = 3f;
-    public float intervaloMax = 6f;
 
     [Header("Minijuego")]
     public List<KeyCode> secuencia = new List<KeyCode>();
@@ -47,17 +46,48 @@ public class SistemaDormir : MonoBehaviour
         OcultarFlechas();
     }
 
+    void Update()
+    {
+        // -------- BARRA DE ENERGÍA --------
+        float objetivo = energia / energiaMax;
+
+        barraCansancio.fillAmount = Mathf.Lerp(
+            barraCansancio.fillAmount,
+            objetivo,
+            Time.deltaTime * 5f
+        );
+
+        // Verde (lleno)  Rojo (vacío)
+        barraCansancio.color = Color.Lerp(Color.red, Color.green, objetivo);
+
+        // -------- ACTIVAR MINIJUEGO --------
+        if (energia <= 25f && !enMinijuego)
+        {
+            ActivarMinijuego();
+        }
+
+        if (enMinijuego)
+        {
+            DetectarInput();
+        }
+    }
+
     IEnumerator CicloParpadeo()
     {
         while (true)
         {
-            yield return new WaitForSeconds(Random.Range(intervaloMin, intervaloMax));
+            // Intervalo dinámico (menos energía = más parpadeo)
+            float factor = energia / energiaMax;
+            float intervalo = Mathf.Lerp(1f, 5f, factor);
+
+            yield return new WaitForSeconds(intervalo);
 
             yield return StartCoroutine(Parpadear());
 
-            cansancio += aumentoPorParpadeo;
+            // Pierde energía
+            energia -= perdidaPorParpadeo;
 
-            if (cansancio >= maxCansancio)
+            if (energia <= 0)
             {
                 Debug.Log("SE DURMIÓ - GAME OVER");
                 Time.timeScale = 0;
@@ -67,7 +97,8 @@ public class SistemaDormir : MonoBehaviour
 
     IEnumerator Parpadear()
     {
-        float tiempoCerrado = tiempoCerradoBase + cansancio;
+        float faltaEnergia = 1f - (energia / energiaMax);
+        float tiempoCerrado = tiempoCerradoBase + (faltaEnergia * 0.2f);
 
         float t = 0;
 
@@ -80,6 +111,7 @@ public class SistemaDormir : MonoBehaviour
             yield return null;
         }
 
+        // OJO CERRADO
         yield return new WaitForSeconds(tiempoCerrado);
 
         // ABRIR
@@ -90,19 +122,6 @@ public class SistemaDormir : MonoBehaviour
             float alpha = Mathf.SmoothStep(1, 0, t / tiempoApertura);
             parpado.color = new Color(0, 0, 0, alpha);
             yield return null;
-        }
-    }
-
-    void Update()
-    {
-        if (cansancio > 0.5f && !enMinijuego)
-        {
-            ActivarMinijuego();
-        }
-
-        if (enMinijuego)
-        {
-            DetectarInput();
         }
     }
 
@@ -144,7 +163,7 @@ public class SistemaDormir : MonoBehaviour
                 {
                     Debug.Log("SE DESPERTÓ");
 
-                    cansancio = 0.2f;
+                    energia = 60f; // recupera energía
                     enMinijuego = false;
 
                     OcultarFlechas();
@@ -160,7 +179,7 @@ public class SistemaDormir : MonoBehaviour
                 flechasUI[inputIndex].color = colorError;
 
                 Debug.Log("ERROR");
-                cansancio += 0.1f;
+                energia -= 5f;
 
                 inputIndex = 0;
                 ActualizarIndicador();
