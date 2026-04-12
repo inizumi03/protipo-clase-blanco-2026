@@ -27,7 +27,7 @@ public class SistemaDormir : MonoBehaviour
     [Header("Energía")]
     public float energia = 100f;
     public float energiaMax = 100f;
-    public float perdidaPorParpadeo = 5f;
+    public float velocidadDrenado = 5f; // energía por segundo
 
     [Header("Parpadeo")]
     public float tiempoCierre = 0.15f;
@@ -39,16 +39,24 @@ public class SistemaDormir : MonoBehaviour
     private int inputIndex = 0;
     private bool enMinijuego = false;
 
+    private float timerParpadeo = 0f;
+    public float intervaloParpadeo = 3f; // lo podés modificar según energía
+
     void Start()
     {
-        StartCoroutine(CicloParpadeo());
         GenerarSecuencia(4);
         OcultarFlechas();
     }
 
     void Update()
     {
-        // -------- BARRA DE ENERGÍA --------
+        // -------- ENERGÍA BAJA CONSTANTE --------
+        if (!enMinijuego)
+        {
+            energia -= velocidadDrenado * Time.deltaTime;
+        }
+
+        // -------- BARRA --------
         float objetivo = energia / energiaMax;
 
         barraCansancio.fillAmount = Mathf.Lerp(
@@ -57,10 +65,18 @@ public class SistemaDormir : MonoBehaviour
             Time.deltaTime * 5f
         );
 
-        // Verde (lleno)  Rojo (vacío)
         barraCansancio.color = Color.Lerp(Color.red, Color.green, objetivo);
 
-        // -------- ACTIVAR MINIJUEGO --------
+        // -------- PARPADEO CONTROLADO POR TI --------
+        timerParpadeo += Time.deltaTime;
+
+        if (timerParpadeo >= intervaloParpadeo)
+        {
+            StartCoroutine(Parpadear());
+            timerParpadeo = 0f;
+        }
+
+        // -------- MINIJUEGO --------
         if (energia <= 25f && !enMinijuego)
         {
             ActivarMinijuego();
@@ -70,28 +86,12 @@ public class SistemaDormir : MonoBehaviour
         {
             DetectarInput();
         }
-    }
 
-    IEnumerator CicloParpadeo()
-    {
-        while (true)
+        // -------- GAME OVER --------
+        if (energia <= 0)
         {
-            // Intervalo dinámico (menos energía = más parpadeo)
-            float factor = energia / energiaMax;
-            float intervalo = Mathf.Lerp(1f, 5f, factor);
-
-            yield return new WaitForSeconds(intervalo);
-
-            yield return StartCoroutine(Parpadear());
-
-            // Pierde energía
-            energia -= perdidaPorParpadeo;
-
-            if (energia <= 0)
-            {
-                Debug.Log("SE DURMIÓ - GAME OVER");
-                Time.timeScale = 0;
-            }
+            Debug.Log("SE DURMIÓ - GAME OVER");
+            Time.timeScale = 0;
         }
     }
 
@@ -111,7 +111,6 @@ public class SistemaDormir : MonoBehaviour
             yield return null;
         }
 
-        // OJO CERRADO
         yield return new WaitForSeconds(tiempoCerrado);
 
         // ABRIR
@@ -163,7 +162,9 @@ public class SistemaDormir : MonoBehaviour
                 {
                     Debug.Log("SE DESPERTÓ");
 
-                    energia = 60f; // recupera energía
+                    //  RESETEA TODO EL CICLO
+                    energia = energiaMax;
+
                     enMinijuego = false;
 
                     OcultarFlechas();
