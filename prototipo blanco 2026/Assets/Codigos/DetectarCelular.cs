@@ -9,7 +9,7 @@ public class DetectarCelular : MonoBehaviour
     public GameObject imagenUI;
     public Transform puntoCara;
 
-    public MiniJuegoCelular miniJuego; //  REFERENCIA AL MINIJUEGO
+    public MiniJuegoCelular miniJuego; // REFERENCIA AL MINIJUEGO
 
     private GameObject celularActual;
 
@@ -24,8 +24,9 @@ public class DetectarCelular : MonoBehaviour
             {
                 celularActual = hit.collider.gameObject;
 
-                // Mostrar UI
-                imagenUI.SetActive(true);
+                // Mostrar UI solo si todavía existe
+                if (imagenUI != null)
+                    imagenUI.SetActive(true);
 
                 if (Input.GetKeyDown(KeyCode.E))
                 {
@@ -35,7 +36,9 @@ public class DetectarCelular : MonoBehaviour
         }
         else
         {
-            imagenUI.SetActive(false);
+            if (imagenUI != null)
+                imagenUI.SetActive(false);
+
             celularActual = null;
         }
     }
@@ -66,7 +69,13 @@ public class DetectarCelular : MonoBehaviour
 
         obj.tag = "Aburrido";
 
-        // ACTIVAR MINIJUEGO ACÁ
+        // DESTRUIR LA UI
+        if (imagenUI != null)
+        {
+            Destroy(imagenUI);
+        }
+
+        // ACTIVAR MINIJUEGO
         if (miniJuego != null)
         {
             miniJuego.ActivarMinijuego();

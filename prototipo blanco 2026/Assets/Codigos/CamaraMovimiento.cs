@@ -25,6 +25,12 @@ public class CamaraMovimiento : MonoBehaviour
     [Header("Seguimiento del cuerpo")]
     public float velocidadSeguimiento = 5f;
 
+    //  NUEVO: MODO FORZADO
+    [Header("Forzar mirada")]
+    public bool forzarMirada = false;
+    public Transform objetivoMirada;
+    public float velocidadForzado = 15f;
+
     private float rotacionX = 0f;
     private float rotacionY = 0f;
     private float inclinacionActual = 0f;
@@ -42,32 +48,77 @@ public class CamaraMovimiento : MonoBehaviour
 
     void Update()
     {
+        //  SI ESTÁ FORZADO
+        if (forzarMirada)
+        {
+            //  Si el objeto ya no existe o está desactivado  cancelar
+            if (objetivoMirada == null || !objetivoMirada.gameObject.activeInHierarchy)
+            {
+                DesactivarMiradaForzada();
+                return;
+            }
+
+            Vector3 direccion = objetivoMirada.position - transform.position;
+            Quaternion rotacionObjetivo = Quaternion.LookRotation(direccion);
+
+            transform.rotation = Quaternion.Slerp(
+                transform.rotation,
+                rotacionObjetivo,
+                Time.deltaTime * velocidadForzado
+            );
+
+            // Rotación del cuerpo
+            Vector3 direccionHorizontal = direccion;
+            direccionHorizontal.y = 0;
+
+            if (direccionHorizontal != Vector3.zero)
+            {
+                cuerpoJugador.rotation = Quaternion.Slerp(
+                    cuerpoJugador.rotation,
+                    Quaternion.LookRotation(direccionHorizontal),
+                    Time.deltaTime * velocidadForzado
+                );
+            }
+
+            return;
+        }
+
+        // ===== CÓDIGO NORMAL =====
+
         float mouseX = Input.GetAxis("Mouse X") * sensibilidadX * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensibilidadY * Time.deltaTime;
 
-        // Suavizado
         mouseXSuave = Mathf.Lerp(mouseXSuave, mouseX, Time.deltaTime * suavizado);
         mouseYSuave = Mathf.Lerp(mouseYSuave, mouseY, Time.deltaTime * suavizado);
 
-        // Rotaciones
         rotacionX -= mouseYSuave;
         rotacionX = Mathf.Clamp(rotacionX, limiteAbajo, limiteArriba);
 
         rotacionY += mouseXSuave;
 
-        // Inclinación lateral
         float objetivoInclinacion = -mouseXSuave * inclinacionMax;
         inclinacionActual = Mathf.Lerp(inclinacionActual, objetivoInclinacion, Time.deltaTime * velocidadInclinacion);
 
-        // Aplicar rotación completa a la cámara
         transform.rotation = Quaternion.Euler(rotacionX, rotacionY, inclinacionActual);
 
-        // El cuerpo sigue lentamente a la cámara (más realista)
-        Quaternion rotacionObjetivo = Quaternion.Euler(0f, rotacionY, 0f);
+        Quaternion rotacionObjetivoCuerpo = Quaternion.Euler(0f, rotacionY, 0f);
         cuerpoJugador.rotation = Quaternion.Lerp(
             cuerpoJugador.rotation,
-            rotacionObjetivo,
+            rotacionObjetivoCuerpo,
             Time.deltaTime * velocidadSeguimiento
         );
+    }
+
+    //  FUNCIONES PARA ACTIVAR/DESACTIVAR
+    public void ActivarMiradaForzada(Transform objetivo)
+    {
+        objetivoMirada = objetivo;
+        forzarMirada = true;
+    }
+
+    public void DesactivarMiradaForzada()
+    {
+        forzarMirada = false;
+        objetivoMirada = null;
     }
 }
