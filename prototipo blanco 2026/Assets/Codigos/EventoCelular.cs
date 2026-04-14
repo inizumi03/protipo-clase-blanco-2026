@@ -2,32 +2,50 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+[System.Serializable]
+public class EventoObjeto
+{
+    public GameObject objeto;     // objeto a activar
+    public float tiempoEspera;    // tiempo antes de activarse
+}
+
 public class EventoCelular : MonoBehaviour
 {
-    [Header("Referencias")]
-    public GameObject celular; // objeto desactivado
-    public CamaraMovimiento camaraScript; // script de cámara
+    [Header("Lista de eventos")]
+    public List<EventoObjeto> eventos = new List<EventoObjeto>();
 
-    [Header("Tiempo")]
-    public float tiempoEspera = 5f;
+    [Header("Referencia cámara")]
+    public CamaraMovimiento camaraScript;
+
+    private GameObject objetoActual;
 
     void Start()
     {
-        StartCoroutine(Evento());
+        StartCoroutine(SecuenciaEventos());
     }
 
-    IEnumerator Evento()
+    IEnumerator SecuenciaEventos()
     {
-        // Espera antes de activar
-        yield return new WaitForSeconds(tiempoEspera);
-
-        // Activar celular
-        celular.SetActive(true);
-
-        //  FORZAR MIRADA (PERMANENTE)
-        if (camaraScript != null)
+        foreach (EventoObjeto evento in eventos)
         {
-            camaraScript.ActivarMiradaForzada(celular.transform);
+            //  Esperar tiempo
+            yield return new WaitForSeconds(evento.tiempoEspera);
+
+            //  Desactivar el anterior
+            if (objetoActual != null)
+            {
+                objetoActual.SetActive(false);
+            }
+
+            //  Activar nuevo objeto
+            objetoActual = evento.objeto;
+            objetoActual.SetActive(true);
+
+            //  Forzar cámara
+            if (camaraScript != null)
+            {
+                camaraScript.ActivarMiradaForzada(objetoActual.transform);
+            }
         }
     }
 

@@ -20,11 +20,12 @@ public class MiniJuegoCelular : MonoBehaviour
 
     [Header("Config")]
     public int longitudSecuencia = 4;
-    public GameObject celular;
 
     private List<KeyCode> secuencia = new List<KeyCode>();
     private int inputIndex = 0;
     private bool enMinijuego = false;
+
+    private GameObject celularActual; // NUEVO
 
     void Start()
     {
@@ -40,10 +41,12 @@ public class MiniJuegoCelular : MonoBehaviour
         }
     }
 
-    //  ESTA ES LA CLAVE
-    public void ActivarMinijuego()
+    //  AHORA RECIBE EL CELULAR
+    public void ActivarMinijuego(GameObject celular)
     {
         if (enMinijuego) return;
+
+        celularActual = celular;
 
         enMinijuego = true;
         inputIndex = 0;
@@ -89,8 +92,9 @@ public class MiniJuegoCelular : MonoBehaviour
 
                     enMinijuego = false;
 
-                    if (celular != null)
-                        celular.SetActive(false);
+                    //  DESACTIVA EL CORRECTO
+                    if (celularActual != null)
+                        celularActual.SetActive(false);
 
                     OcultarFlechas();
                     GenerarSecuencia();

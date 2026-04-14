@@ -2,15 +2,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DetectarCelular : MonoBehaviour
+public class Distraerse : MonoBehaviour
 {
     public float distancia = 3f;
     public LayerMask capaCelular;
     public GameObject imagenUI;
     public Transform puntoCara;
 
+    public MiniJuegoCelular miniJuego; // REFERENCIA AL MINIJUEGO
+
     private GameObject celularActual;
-    private HashSet<GameObject> celularesUsados = new HashSet<GameObject>();
 
     void Update()
     {
@@ -19,18 +20,17 @@ public class DetectarCelular : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, distancia, capaCelular))
         {
-            GameObject obj = hit.collider.gameObject;
-
-            if (obj.CompareTag("Celular") || obj.CompareTag("Aburrido"))
+            if (hit.collider.CompareTag("Ventana"))
             {
-                celularActual = obj;
+                celularActual = hit.collider.gameObject;
 
-                if (imagenUI != null && !celularesUsados.Contains(obj))
+                // Mostrar UI solo si todavía existe
+                if (imagenUI != null)
                     imagenUI.SetActive(true);
 
-                if (Input.GetKeyDown(KeyCode.E) && !celularesUsados.Contains(obj))
+                if (Input.GetKeyDown(KeyCode.E))
                 {
-                    StartCoroutine(MoverSuave(obj));
+                    StartCoroutine(MoverSuave(celularActual));
                 }
             }
         }
@@ -69,21 +69,18 @@ public class DetectarCelular : MonoBehaviour
 
         obj.tag = "Aburrido";
 
-        celularesUsados.Add(obj);
-
+        // DESTRUIR LA UI
         if (imagenUI != null)
-            imagenUI.SetActive(false);
+        {
+            Destroy(imagenUI);
+        }
 
-        //  CLAVE: buscar el minijuego en ESE celular
-        MiniJuegoCelular miniJuego = obj.GetComponent<MiniJuegoCelular>();
-
+        // ACTIVAR MINIJUEGO
         if (miniJuego != null)
         {
             miniJuego.ActivarMinijuego(obj);
         }
-        else
-        {
-            Debug.LogWarning("Este celular no tiene MiniJuegoCelular");
-        }
     }
 }
+
+
