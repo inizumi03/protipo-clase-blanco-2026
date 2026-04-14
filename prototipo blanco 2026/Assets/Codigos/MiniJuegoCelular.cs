@@ -25,7 +25,7 @@ public class MiniJuegoCelular : MonoBehaviour
     private int inputIndex = 0;
     private bool enMinijuego = false;
 
-    private GameObject celularActual; // NUEVO
+    private GameObject celularActual; 
 
     void Start()
     {
@@ -41,7 +41,7 @@ public class MiniJuegoCelular : MonoBehaviour
         }
     }
 
-    //  AHORA RECIBE EL CELULAR
+    
     public void ActivarMinijuego(GameObject celular)
     {
         if (enMinijuego) return;
@@ -58,7 +58,7 @@ public class MiniJuegoCelular : MonoBehaviour
         Debug.Log("MINIJUEGO ACTIVADO");
     }
 
-    // =========================================================
+   
 
     void GenerarSecuencia()
     {
@@ -92,7 +92,7 @@ public class MiniJuegoCelular : MonoBehaviour
 
                     enMinijuego = false;
 
-                    //  DESACTIVA EL CORRECTO
+                    
                     if (celularActual != null)
                         celularActual.SetActive(false);
 
@@ -114,9 +114,9 @@ public class MiniJuegoCelular : MonoBehaviour
         }
     }
 
-    // =========================================================
+    
     // UI
-    // =========================================================
+    
 
     void MostrarFlechas()
     {

@@ -14,26 +14,26 @@ public class SistemaDormir : MonoBehaviour
     [Header("UI Flechas")]
     public List<Image> flechasUI = new List<Image>();
 
-    // ---------------- COLORES ----------------
+   
     public Color colorNormal = Color.gray;
     public Color colorActivo = Color.white;
     public Color colorCorrecto = Color.green;
     public Color colorError = Color.red;
 
-    // ---------------- SPRITES ----------------
+    
     [Header("Sprites Flechas")]
     public Sprite flechaArriba;
     public Sprite flechaAbajo;
     public Sprite flechaIzquierda;
     public Sprite flechaDerecha;
 
-    // ---------------- ENERGÍA ----------------
+    
     [Header("Energía")]
     public float energia = 100f;
     public float energiaMax = 100f;
     public float gastoPorSegundo = 10f; // cuanto baja mirando algo aburrido
 
-    // ---------------- PARPADEO ----------------
+   
     [Header("Parpadeo")]
     public float tiempoCierre = 0.15f;
     public float tiempoApertura = 0.2f;
@@ -42,13 +42,13 @@ public class SistemaDormir : MonoBehaviour
     private float timerParpadeo = 0f;
     public float intervaloParpadeo = 3f;
 
-    // ---------------- MINIJUEGO ----------------
+    // MINIJUEGO
     [Header("Minijuego")]
     public List<KeyCode> secuencia = new List<KeyCode>();
     private int inputIndex = 0;
     private bool enMinijuego = false;
 
-    // =========================================================
+   
 
     void Start()
     {
@@ -60,7 +60,7 @@ public class SistemaDormir : MonoBehaviour
     {
         DetectarObjetoAburrido();
 
-        // -------- BARRA --------
+        
         float objetivo = energia / energiaMax;
 
         barraCansancio.fillAmount = Mathf.Lerp(
@@ -71,7 +71,7 @@ public class SistemaDormir : MonoBehaviour
 
         barraCansancio.color = Color.Lerp(Color.red, Color.green, objetivo);
 
-        // -------- PARPADEO SOLO SI < 85 --------
+        
         if (energia <= 85f)
         {
             timerParpadeo += Time.deltaTime;
@@ -83,7 +83,7 @@ public class SistemaDormir : MonoBehaviour
             }
         }
 
-        // -------- MINIJUEGO --------
+        
         if (energia <= 30f && !enMinijuego)
         {
             ActivarMinijuego();
@@ -94,7 +94,7 @@ public class SistemaDormir : MonoBehaviour
             DetectarInput();
         }
 
-        // -------- GAME OVER --------
+        
         if (energia <= 0)
         {
             Debug.Log("SE DURMIÓ - GAME OVER");
@@ -102,9 +102,9 @@ public class SistemaDormir : MonoBehaviour
         }
     }
 
-    // =========================================================
+    
     // DETECTAR OBJETO ABURRIDO
-    // =========================================================
+    
 
     void DetectarObjetoAburrido()
     {
@@ -120,9 +120,9 @@ public class SistemaDormir : MonoBehaviour
         }
     }
 
-    // =========================================================
+    
     // PARPADEO
-    // =========================================================
+    
 
     IEnumerator Parpadear()
     {
@@ -153,9 +153,9 @@ public class SistemaDormir : MonoBehaviour
         }
     }
 
-    // =========================================================
+    
     // MINIJUEGO
-    // =========================================================
+  
 
     void GenerarSecuencia(int longitud)
     {
@@ -224,9 +224,9 @@ public class SistemaDormir : MonoBehaviour
         }
     }
 
-    // =========================================================
+    
     // UI
-    // =========================================================
+    
 
     void MostrarFlechas()
     {
@@ -267,9 +267,9 @@ public class SistemaDormir : MonoBehaviour
         }
     }
 
-    // =========================================================
+    
     // SPRITES
-    // =========================================================
+    
 
     Sprite ObtenerSprite(KeyCode tecla)
     {

@@ -25,7 +25,7 @@ public class CamaraMovimiento : MonoBehaviour
     [Header("Seguimiento del cuerpo")]
     public float velocidadSeguimiento = 5f;
 
-    //  NUEVO: MODO FORZADO
+    
     [Header("Forzar mirada")]
     public bool forzarMirada = false;
     public Transform objetivoMirada;
@@ -48,10 +48,10 @@ public class CamaraMovimiento : MonoBehaviour
 
     void Update()
     {
-        //  SI ESTÁ FORZADO
+        
         if (forzarMirada)
         {
-            //  Si el objeto ya no existe o está desactivado  cancelar
+            
             if (objetivoMirada == null || !objetivoMirada.gameObject.activeInHierarchy)
             {
                 DesactivarMiradaForzada();
@@ -83,7 +83,7 @@ public class CamaraMovimiento : MonoBehaviour
             return;
         }
 
-        // ===== CÓDIGO NORMAL =====
+        
 
         float mouseX = Input.GetAxis("Mouse X") * sensibilidadX * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensibilidadY * Time.deltaTime;
@@ -109,7 +109,7 @@ public class CamaraMovimiento : MonoBehaviour
         );
     }
 
-    //  FUNCIONES PARA ACTIVAR/DESACTIVAR
+    //ACTIVAR/DESACTIVAR
     public void ActivarMiradaForzada(Transform objetivo)
     {
         objetivoMirada = objetivo;

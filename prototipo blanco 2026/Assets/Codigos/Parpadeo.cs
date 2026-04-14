@@ -31,31 +31,31 @@ public class Parpadeo : MonoBehaviour
 
     IEnumerator Parpadear()
     {
-        // CERRAR (suave tipo easing)
+        // CERRAR 
         float t = 0;
         while (t < tiempoCierre)
         {
             t += Time.deltaTime;
             float progreso = t / tiempoCierre;
 
-            // curva suave (ease in)
+            
             float alpha = Mathf.SmoothStep(0, 1, progreso);
 
             parpado.color = new Color(0, 0, 0, alpha);
             yield return null;
         }
 
-        // pequeña pausa (ojo cerrado)
+        
         yield return new WaitForSeconds(tiempoCerrado);
 
-        // ABRIR (un poco más lento y natural)
+        
         t = 0;
         while (t < tiempoApertura)
         {
             t += Time.deltaTime;
             float progreso = t / tiempoApertura;
 
-            // curva suave (ease out)
+            
             float alpha = Mathf.SmoothStep(1, 0, progreso);
 
             parpado.color = new Color(0, 0, 0, alpha);
