@@ -4,31 +4,41 @@ using UnityEngine;
 
 public class MoverAprofe : MonoBehaviour
 {
-    public Transform puntoA;
-    public Transform puntoB;
+    [Header("Puntos de movimiento")]
+    public Transform[] puntos;
 
+    [Header("Movimiento")]
     public float velocidad = 2f;
 
-    private Transform objetivo;
-
-    void Start()
-    {
-        objetivo = puntoB;
-    }
+    private int indiceActual = 0;
 
     void Update()
     {
-        // Mover hacia el objetivo
+        // Evita errores si no hay puntos
+        if (puntos.Length == 0)
+            return;
+
+        // Punto actual al que va
+        Transform objetivo = puntos[indiceActual];
+
+        // Movimiento
         transform.position = Vector3.MoveTowards(
             transform.position,
             objetivo.position,
             velocidad * Time.deltaTime
         );
 
-        // Si llega al destino, cambiar
+        // Cuando llega al punto
         if (Vector3.Distance(transform.position, objetivo.position) < 0.1f)
         {
-            objetivo = (objetivo == puntoA) ? puntoB : puntoA;
+            indiceActual++;
+
+            // Si llega al final vuelve al inicio
+            if (indiceActual >= puntos.Length)
+            {
+                indiceActual = 0;
+            }
         }
     }
 }
+
