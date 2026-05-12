@@ -3341,6 +3341,7 @@ MonoBehaviour:
   forzarMirada: 0
   objetivoMirada: {fileID: 767936868}
   velocidadForzado: 15
+  juegoTerminado: 0
 --- !u!114 &963194231
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3379,12 +3380,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 883d51566ed4011459dc642acc53bd0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  camaraMovimiento: {fileID: 963194230}
   distancia: 100
   capaProfesor:
     serializedVersion: 2
     m_Bits: 64
   puntos: 0
-  puntosPorSegundo: 1
+  puntosPorSegundo: 2
   puntosParaGanar: 100
   textoPuntos: {fileID: 1401379570}
   mensajeGanaste: {fileID: 205411492}
@@ -6323,8 +6325,8 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 963194228}
-  - {fileID: 1950850342}
   - {fileID: 1945980691}
+  - {fileID: 1950850342}
   - {fileID: 1515517273}
   - {fileID: 1198986131}
   - {fileID: 337979957}

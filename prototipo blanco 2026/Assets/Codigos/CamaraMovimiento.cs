@@ -25,11 +25,13 @@ public class CamaraMovimiento : MonoBehaviour
     [Header("Seguimiento del cuerpo")]
     public float velocidadSeguimiento = 5f;
 
-    
     [Header("Forzar mirada")]
     public bool forzarMirada = false;
     public Transform objetivoMirada;
     public float velocidadForzado = 15f;
+
+    [Header("Victoria")]
+    public bool juegoTerminado = false;
 
     private float rotacionX = 0f;
     private float rotacionY = 0f;
@@ -48,10 +50,12 @@ public class CamaraMovimiento : MonoBehaviour
 
     void Update()
     {
-        
+        // Si el juego terminó no mover cámara
+        if (juegoTerminado)
+            return;
+
         if (forzarMirada)
         {
-            
             if (objetivoMirada == null || !objetivoMirada.gameObject.activeInHierarchy)
             {
                 DesactivarMiradaForzada();
@@ -67,7 +71,6 @@ public class CamaraMovimiento : MonoBehaviour
                 Time.deltaTime * velocidadForzado
             );
 
-            // Rotación del cuerpo
             Vector3 direccionHorizontal = direccion;
             direccionHorizontal.y = 0;
 
@@ -82,8 +85,6 @@ public class CamaraMovimiento : MonoBehaviour
 
             return;
         }
-
-        
 
         float mouseX = Input.GetAxis("Mouse X") * sensibilidadX * Time.deltaTime;
         float mouseY = Input.GetAxis("Mouse Y") * sensibilidadY * Time.deltaTime;
@@ -102,6 +103,7 @@ public class CamaraMovimiento : MonoBehaviour
         transform.rotation = Quaternion.Euler(rotacionX, rotacionY, inclinacionActual);
 
         Quaternion rotacionObjetivoCuerpo = Quaternion.Euler(0f, rotacionY, 0f);
+
         cuerpoJugador.rotation = Quaternion.Lerp(
             cuerpoJugador.rotation,
             rotacionObjetivoCuerpo,
@@ -109,7 +111,7 @@ public class CamaraMovimiento : MonoBehaviour
         );
     }
 
-    //ACTIVAR/DESACTIVAR
+    // ACTIVAR/DESACTIVAR MIRADA
     public void ActivarMiradaForzada(Transform objetivo)
     {
         objetivoMirada = objetivo;
@@ -120,5 +122,23 @@ public class CamaraMovimiento : MonoBehaviour
     {
         forzarMirada = false;
         objetivoMirada = null;
+    }
+
+    // GANAR
+    public void TerminarJuego()
+    {
+        juegoTerminado = true;
+
+        // Desbloquear mouse
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
+
+        // Desactivar Audio Listener
+        AudioListener audioListener = GetComponent<AudioListener>();
+
+        if (audioListener != null)
+        {
+            audioListener.enabled = false;
+        }
     }
 }

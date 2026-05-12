@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 public class SistemaPuntosMirada : MonoBehaviour
 {
+    public CamaraMovimiento camaraMovimiento;
     [Header("Detección")]
     public float distancia = 10f;
     public LayerMask capaProfesor;
@@ -15,7 +16,7 @@ public class SistemaPuntosMirada : MonoBehaviour
     public float puntosParaGanar = 100f;
 
     [Header("UI")]
-    public TMP_Text textoPuntos; //  CAMBIO
+    public TMP_Text textoPuntos;
     public GameObject mensajeGanaste;
 
     private bool gano = false;
@@ -44,7 +45,7 @@ public class SistemaPuntosMirada : MonoBehaviour
             textoPuntos.text = "" + Mathf.FloorToInt(puntos);
         }
 
-        //  Ganar
+        // Ganar
         if (puntos >= puntosParaGanar)
         {
             Ganar();
@@ -57,9 +58,18 @@ public class SistemaPuntosMirada : MonoBehaviour
 
         Time.timeScale = 0f;
 
+        // Mostrar mensaje
         if (mensajeGanaste != null)
             mensajeGanaste.SetActive(true);
+        if (camaraMovimiento != null)
+        {
+            camaraMovimiento.TerminarJuego();
+        }
+        // Desbloquear mouse
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
 
         Debug.Log("GANASTE");
+       
     }
 }
